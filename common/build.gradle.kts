@@ -34,6 +34,11 @@ repositories {
         includeGroup("github.scarsz")
     }
 
+    // LuckPerms
+    exclusive("https://repo.luckperms.net", { mavenContent { releasesOnly() } }) {
+        includeGroup("net.luckperms")
+    }
+
     // Cumulus
     exclusive("https://repo.opencollab.dev/maven-releases/", { mavenContent { releasesOnly() } }) {
         includeGroup("org.geysermc.api")
