@@ -37,12 +37,16 @@ repositories {
     // Cumulus
     exclusive("https://repo.opencollab.dev/maven-releases/", { mavenContent { releasesOnly() } }) {
         includeGroup("org.geysermc.api")
+
     }
 
     // Floodgate
     exclusive("https://repo.opencollab.dev/maven-snapshots/", { mavenContent { snapshotsOnly() } }) {
         includeGroup("org.geysermc.floodgate")
         includeGroup("org.geysermc.cumulus")
+        includeGroup("org.geysermc.api")
+        includeGroup("org.geysermc.geyser")
+        includeGroup("org.geysermc.event")
         includeModule("org.geysermc", "common")
         includeModule("org.geysermc", "geyser-parent")
     }
