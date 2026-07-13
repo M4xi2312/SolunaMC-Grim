@@ -6,33 +6,58 @@ plugins {
     grim.`base-conventions`
     grim.`shadow-conventions`
     id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
-    id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 repositories {
     val localOverride = if (BuildConfig.mavenLocalOverride) mavenLocal() else null
 
-    // Exclusive Repositories (One HTTP request per dep)
-    exclusive("https://repo.papermc.io/repository/maven-public/", { name = "papermc" }) {
-        includeGroup("io.papermc.paper")
-        includeGroup("net.md-5")
+    // PaperMC API & Build-Tools
+    exclusiveContent {
+        forRepository {
+            maven("https://repo.papermc.io/repository/maven-public/") { name = "papermc" }
+        }
+        filter {
+            includeGroup("io.papermc.paper")
+            includeGroup("net.md-5")
+        }
     }
 
-    exclusive("https://libraries.minecraft.net", { mavenContent { releasesOnly() } }) {
-        includeModule("com.mojang", "brigadier")
+    // Mojang interne Bibliotheken (z.B. Brigadier)
+    exclusiveContent {
+        forRepository {
+            maven("https://libraries.minecraft.net") { mavenContent { releasesOnly() } }
+        }
+        filter {
+            includeModule("com.mojang", "brigadier")
+        }
     }
 
-    exclusive("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
-        includeGroup("me.clip")
+    // PlaceholderAPI
+    exclusiveContent {
+        forRepository {
+            maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
+        filter {
+            includeGroup("me.clip")
+        }
     }
 
-    val grimPublicReleases = maven("https://maven.grim.ac/public/releases") {
-        mavenContent { releasesOnly() }
+    // LuckPerms API
+    exclusiveContent {
+        forRepository {
+            maven("https://repo.luckperms.net/")
+        }
+        filter {
+            includeGroup("net.luckperms")
+        }
     }
-    val grimPublicSnapshots = maven("https://maven.grim.ac/public/snapshots") {
-        mavenContent { snapshotsOnly() }
-    }
+
+    // GrimAC & PacketEvents Repositories (Zusammengefasst)
+    val grimPublicReleases = maven("https://maven.grim.ac/public/releases") { mavenContent { releasesOnly() } }
+    val grimPublicSnapshots = maven("https://maven.grim.ac/public/snapshots") { mavenContent { snapshotsOnly() } }
     val grimLegacySnapshots = maven("https://repo.grim.ac/snapshots")
+    
     exclusiveContent {
         forRepositories(*listOfNotNull(localOverride, grimPublicReleases, grimPublicSnapshots, grimLegacySnapshots).toTypedArray())
         filter {
@@ -41,24 +66,28 @@ repositories {
         }
     }
 
-    exclusive("https://nexus.scarsz.me/content/repositories/releases", { mavenContent { releasesOnly() } }) {
-        includeGroup("github.scarsz")
+    // Scarsz Repository (z.B. für Discordsrv / andere Brücken)
+    exclusiveContent {
+        forRepository {
+            maven("https://nexus.scarsz.me/content/repositories/releases") { mavenContent { releasesOnly() } }
+        }
+        filter {
+            includeGroup("github.scarsz")
+        }
     }
 
     mavenCentral()
 }
-
 
 dependencies {
     compileOnly(libs.paper.api)
     compileOnly(libs.placeholderapi)
     compileOnly(libs.luckperms)
 
-    if (BuildConfig.shadePE) {
-        implementation(libs.packetevents.spigot)
-    } else {
-        compileOnly(libs.packetevents.spigot)
-    }
+    // PacketEvents je nach Build-Konfiguration shaden oder nur bereitstellen
+    val packetEventsConfig = if (BuildConfig.shadePE) "implementation" else "compileOnly"
+    add(packetEventsConfig, libs.packetevents.spigot)
+
     implementation(libs.cloud.paper)
     implementation(libs.adventure.platform.bukkit)
     implementation(libs.grim.bukkit.internal)
@@ -91,13 +120,11 @@ bukkit {
         "FastLogin",
         "PlaceholderAPI",
         "LuckPerms",
-        // Driver holder mods — softdepend so each backend's driver class
-        // resolves through the linked classloader.
         "sqlite-jdbc",
         "mysql-jdbc",
         "postgresql-jdbc",
         "mongodb-driver",
-        "jedis",
+        "jedis"
     )
 
     permissions {
@@ -105,87 +132,70 @@ bukkit {
             description = "Receive alerts for violations"
             default = Permission.Default.OP
         }
-
         register("grim.alerts.enable-on-join") {
             description = "Enable alerts on join"
             default = Permission.Default.OP
         }
-
         register("grim.performance") {
             description = "Check performance metrics"
             default = Permission.Default.OP
         }
-
         register("grim.profile") {
             description = "Check user profile"
             default = Permission.Default.OP
         }
-
         register("grim.brand") {
             description = "Show client brands on join"
             default = Permission.Default.OP
         }
-
         register("grim.brand.enable-on-join") {
             description = "Enable showing client brands on join"
             default = Permission.Default.OP
         }
-
         register("grim.sendalert") {
             description = "Send cheater alert"
             default = Permission.Default.OP
         }
-
         register("grim.nosetback") {
             description = "Disable setback"
             default = Permission.Default.FALSE
         }
-
         register("grim.nomodifypacket") {
             description = "Disable modifying packets"
             default = Permission.Default.FALSE
         }
-
         register("grim.disabled") {
             description = "Disable Grim checks while keeping player state tracked"
             default = Permission.Default.FALSE
         }
-
         register("grim.exempt") {
             description = "Exempt from all checks"
             default = Permission.Default.FALSE
         }
-
         register("grim.verbose") {
             description = "Receive verbose alerts for violations"
             default = Permission.Default.OP
         }
-
         register("grim.verbose.enable-on-join") {
-            description =
-                "Enable verbose alerts on join"
+            description = "Enable verbose alerts on join"
             default = Permission.Default.FALSE
         }
-
         register("grim.list") {
-            description =
-                "Shows lists of specific data"
+            description = "Shows lists of specific data"
             default = Permission.Default.FALSE
         }
-
     }
 }
 
-publishing.publications.create<MavenPublication>("maven") {
-    artifact(tasks["shadowJar"])
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.named("shadowJar"))
+        }
+    }
 }
 
 tasks {
-    // 1.8.8 - 1.16.5   = Java 8
-    // 1.17             = Java 16
-    // 1.18 - 1.20.4    = Java 17
-    // 1.20.5 - 1.21.11 = Java 21
-    // 26.1+            = Java 25
     val version = "26.2"
     val javaVersion = JavaLanguageVersion.of(25)
 
