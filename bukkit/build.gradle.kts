@@ -6,7 +6,7 @@ plugins {
     grim.`base-conventions`
     grim.`shadow-conventions`
     id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
-    id("xyz.jpenilla.run-paper") version "3.0.0-beta.1"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 repositories {
@@ -47,7 +47,6 @@ repositories {
 
     mavenCentral()
 }
-
 
 dependencies {
     compileOnly(libs.paper.api)
@@ -162,22 +161,23 @@ bukkit {
         }
 
         register("grim.verbose.enable-on-join") {
-            description =
-                "Enable verbose alerts on join"
+            description = "Enable verbose alerts on join"
             default = Permission.Default.FALSE
         }
 
         register("grim.list") {
-            description =
-                "Shows lists of specific data"
+            description = "Shows lists of specific data"
             default = Permission.Default.FALSE
         }
-
     }
 }
 
-publishing.publications.create<MavenPublication>("maven") {
-    artifact(tasks["shadowJar"])
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.named("shadowJar"))
+        }
+    }
 }
 
 tasks {
