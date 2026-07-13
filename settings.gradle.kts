@@ -3,8 +3,8 @@ run {
     val userProps = rootDir.resolve("gradle.user.properties")
     if (userProps.isFile) {
         val loaded = java.util.Properties()
-        userProps.inputStream().use { loaded.load(it) }
-        for ((key, value) in loaded) {
+        userProps.reader().use { loaded.load(it) }
+        loaded.forEach { (key, value) ->
             System.setProperty(key.toString(), value.toString())
         }
     }
@@ -13,11 +13,11 @@ run {
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            from(files("libs.versions.toml"))
+            from(file("libs.versions.toml"))
         }
 
         create("testlibs") {
-            from(files("testlibs.versions.toml"))
+            from(file("testlibs.versions.toml"))
         }
     }
 }
@@ -61,29 +61,30 @@ if (gradle.startParameter.isBuildScan) {
             // Automatically add useful tags and links to the scan
             if (System.getenv("CI") == "true") {
                 tag("CI")
-                link(
-                    "GitHub Actions build",
-                    System.getenv("GITHUB_SERVER_URL") + "/" + System.getenv("GITHUB_REPOSITORY") + "/actions/runs/" + System.getenv(
-                        "GITHUB_RUN_ID"
-                    )
-                )
+                val server = System.getenv("GITHUB_SERVER_URL")
+                val repo = System.getenv("GITHUB_REPOSITORY")
+                val runId = System.getenv("GITHUB_RUN_ID")
+                link("GitHub Actions build", "$server/$repo/actions/runs/$runId")
             }
         }
     }
 }
 
 rootProject.name = "grimac"
-include("common")
-include("bukkit")
-include("fabric")
-include(":fabric:shared")
-include(":fabric:intermediary")
-include(":fabric:intermediary:mc1161")
-include(":fabric:intermediary:mc1171")
-include(":fabric:intermediary:mc1194")
-include(":fabric:intermediary:mc1205")
-include(":fabric:intermediary:mc12111")
-include(":fabric:official")
-include(":fabric:official:mc261")
+
+include(
+    "common",
+    "bukkit",
+    "fabric",
+    "fabric:shared",
+    "fabric:intermediary",
+    "fabric:intermediary:mc1161",
+    "fabric:intermediary:mc1171",
+    "fabric:intermediary:mc1194",
+    "fabric:intermediary:mc1205",
+    "fabric:intermediary:mc12111",
+    "fabric:official",
+    "fabric:official:mc261"
+)
 
 if (file("workspace.gradle.kts").exists()) apply(from = "workspace.gradle.kts")
