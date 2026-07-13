@@ -13,11 +13,11 @@ run {
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            from(file("libs.versions.toml"))
+            from(files("libs.versions.toml"))
         }
 
         create("testlibs") {
-            from(file("testlibs.versions.toml"))
+            from(files("testlibs.versions.toml"))
         }
     }
 }
