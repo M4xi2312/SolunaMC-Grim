@@ -10,29 +10,29 @@ cloud-fabric-official = "2.0.0-beta.17"
 cloud-processors-requirements = "1.0.0-rc.1"
 
 # --- Minecraft-Specific APIs ---
-floodgate-api = "2.0-SNAPSHOT"
-geyser-base-api = "1.0.2"
+floodgate-api = "2.2.5-SNAPSHOT"
+geyser-base-api = "2.0.7-SNAPSHOT"
 grim-api = "1.6.0.9"
-packetevents = "2.13.1+8187e23-SNAPSHOT"
-placeholderapi = "2.11.6"
-viaversion = "5.9.0"
-luckperms = "5.5"
+packetevents = "2.13.0"
+placeholderapi = "2.12.3"
+viaversion = "5.11.0"
+luckperms = "5.11.0"
 
 # --- General Java Utilities ---
-fastutil = "8.5.15"
-hikaricp = "7.0.2"
-jetbrains-annotations = "24.1.0"
-mongoDriverSync = "5.3.1"
-netty = "4.1.85.Final"
-snakeyaml = "2.2"
+fastutil = "8.5.18"
+hikaricp = "7.1.0"
+jetbrains-annotations = "26.1.0"
+mongoDriverSync = "5.9.0"
+netty = "4.2.16.Final"
+snakeyaml = "2.6"
 configuralize = "1.4.1" # :slim classifier is applied in build.gradle.kts
 
 # --- Build & Tooling ---
-fabric-loader = "0.16.14"
-fabric-loom = "1.15.5"
-lombok = "9.0.0"
-shadow = "9.3.0"
-spotless = "6.25.0"
+fabric-loader = "0.19.3"
+fabric-loom = "1.17.12"
+lombok = "9.5.0"
+shadow = "9.5.1"
+spotless = "8.8.0"
 
 [libraries]
 # --- Core Frameworks: Adventure (Text) & Cloud (Commands) ---
