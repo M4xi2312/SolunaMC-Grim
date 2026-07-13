@@ -37,6 +37,7 @@ repositories {
     // Cumulus
     exclusive("https://repo.opencollab.dev/maven-releases/", { mavenContent { releasesOnly() } }) {
         includeGroup("org.geysermc.api")
+        includeGroup("org.geysermc.cumulus")
 
     }
 
