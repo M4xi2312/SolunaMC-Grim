@@ -13,7 +13,6 @@ group = "ac.grim.grimac"
 version = VersionUtil.computeVersion(project, baseVersion)
 description = "Libre simulation anticheat designed for 26.2 with 1.8–26.2 support, powered by PacketEvents 2.0."
 
-// Typsichere Datenstruktur statt veraltetem 'ext'
 class VersionData {
     val timestamp = System.currentTimeMillis().toString()
     val gitBranch = VersionUtil.getGitBranch(project, true)
@@ -41,7 +40,6 @@ tasks.register("printVersion") {
 }
 
 subprojects {
-    // Optimiert die Kompilierung für alle Sprachen (Java & Kotlin)
     tasks.withType<JavaCompile>().configureEach {
         options.isFork = true
         options.isIncremental = true
